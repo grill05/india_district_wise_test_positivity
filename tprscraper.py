@@ -147,4 +147,12 @@ def scraper(infile='COVID19DistrictWisePositivityAnalysis20July.xlsx',year=2022,
   print(print_info)
   return out
 if __name__=='__main__':
-  scraper()
+  if len(sys.argv)>1:
+    if sys.argv[1] in ["scrape_download_mohfw_website"]:
+      scrape_download_mohfw_website()
+    elif sys.argv[1] in ["scraper"]:
+      if os.path.exists(sys.argv[-1]):
+        scraper(sys.argv[-1])
+    else:
+      if os.path.exists(sys.argv[-1]):
+        scraper(sys.argv[-1])
