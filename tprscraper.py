@@ -12,11 +12,25 @@ def scrape_download_mohfw_website():
   date = datetime.datetime.now().strftime("%Y-%m-%d")
   if os.path.exists('index.html'): os.remove('index.html')
   
-  cmd='wget https://mohfw.gov.in/ -O index.html';os.system(cmd)
+  cmd='wget https://mohfw.gov.in/ -O index.html';
+  print(cmd);os.system(cmd);
+  
   soup=bs4.BeautifulSoup(open('index.html'),'html.parser')
   spreadsheet_links=list(set([i['href'] for i in soup('a') if i.has_attr('href') and '.xlsx' in i['href'] and 'tivity' in i['href']]))
   if not spreadsheet_links:
     print(highlight('Could not find Weekly district-wise +vity spreadsheet (.xlsx) from https://mohfw.gov.in/ on %s!!' %(date)))
+    return
+  basename=os.path.split(spreadsheet_links[0])[1]
+  fname='mohfw_spreadsheets_archive/2022/'+basename
+  if os.path.exists(fname):
+    print('File %s already exists in archive\nSkipping!!' %(fname))
+  else:
+    print('File %s does not exist in archive\nDownloading!' %(fname))
+    cmd='wget "'+spreadsheet_links[0]+'" -O "'+fname+'"'
+    print(cmd);os.system(cmd);
+    #update csv
+    scraper(fname,write_csv=True)
+    
   
 def scraper(infile='COVID19DistrictWisePositivityAnalysis20July.xlsx',year=2022,write_csv=False):
   print_info=''
