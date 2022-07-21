@@ -1,4 +1,4 @@
-import os,sys,datetime,csv,colorama
+import os,sys,datetime,csv,colorama,bs4
 from districts_map import state_code_to_name,state_name_to_code,state_names_caps,district_to_state,state_to_district,duplicated_districts
 
 def highlight(text):
@@ -8,6 +8,16 @@ def highlight(text):
     )
     return highlight_begin + text + highlight_reset
 
+def scrape_download_mohfw_website():
+  date = datetime.datetime.now().strftime("%Y-%m-%d")
+  if os.path.exists('index.html'): os.remove('index.html')
+  
+  cmd='wget https://mohfw.gov.in/ -O index.html';os.system(cmd)
+  soup=bs4.BeautifulSoup(open('index.html'),'html.parser')
+  spreadsheet_links=list(set([i['href'] for i in soup('a') if i.has_attr('href') and '.xlsx' in i['href'] and 'tivity' in i['href']]))
+  if not spreadsheet_links:
+    print(highlight('Could not find Weekly district-wise +vity spreadsheet (.xlsx) from https://mohfw.gov.in/ on %s!!' %(date)))
+  
 def scraper(infile='COVID19DistrictWisePositivityAnalysis20July.xlsx',year=2022,write_csv=False):
   print_info=''
   if os.path.exists('tmp.csv'): os.remove('tmp.csv')
