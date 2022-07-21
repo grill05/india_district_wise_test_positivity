@@ -23,9 +23,9 @@ def scrape_download_mohfw_website():
   basename=os.path.split(spreadsheet_links[0])[1]
   fname='mohfw_spreadsheets_archive/2022/'+basename
   if os.path.exists(fname):
-    print('File %s already exists in archive\nSkipping!!' %(fname))
+    print('File %s already exists in archive\nSkipping!!\n------------' %(fname))
   else:
-    print('File %s does not exist in archive\nDownloading!' %(fname))
+    print('File %s does not exist in archive\nDownloading!\n------------' %(fname))
     cmd='wget "'+spreadsheet_links[0]+'" -O "'+fname+'"'
     print(cmd);os.system(cmd);
     #update csv
