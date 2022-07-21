@@ -1,0 +1,50 @@
+name: CI build
+
+on:
+  schedule:
+  - cron:  '12 6 * * *'
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    env:
+      PY_COLORS: "1"
+      GLOBAL_PROXY: ${{ secrets.GLOBAL_PROXY }}
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.6'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        sudo apt-get update&&sudo apt-get install -y xlsx2csv
+    #~ - name: Setup upterm session
+      #~ uses: lhotari/action-upterm@v1    
+    #~ - name: Scrape city beds data
+      #~ run: |
+        #~ python scraper.py
+        
+    - name: Checking&updating csv using MoHFW site
+      if: always()
+      run: python tprscraper.py scrape_download_mohfw_website
+      
+    - name: Commit modified csv files
+      if: always()
+      run: |
+        git config --global user.name 'Actions Bot'
+        git config --global user.email 'actions-bot@users.noreply.github.com'
+        export TZ=Asia/Calcutta 
+        git add --verbose mohfw_spreadsheets_archive/
+        git commit -am "Automated report: `date +'%Y-%m-%d %H:%M:%S'`"
+        git push
+    - uses: gautamkrishnar/keepalive-workflow@master # using the workflow with default settings
+
+        
