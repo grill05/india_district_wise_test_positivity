@@ -27,9 +27,15 @@ def scrape_download_mohfw_website():
   else:
     print('File %s does not exist in archive\nDownloading!\n------------' %(fname))
     cmd='wget "'+spreadsheet_links[0]+'" -O "'+fname+'"'
-    print(cmd);os.system(cmd);
+    print(cmd);os.system(cmd);dont_scrape=False
+    if not os.path.exists(fname): #download failed for some reason.Retry
+      os.system(cmd);
+      if not os.path.exists(fname): #download failed again.Giving up
+        print('%s file could not be downloaded from url: %u, even after retrying. Giving up!!' %(fname,spreadsheet_links[0]))
+        dont_scrape=True
+
     #update csv
-    scraper(fname,write_csv=True)
+    if not dont_scrape: scraper(fname,write_csv=True)
     
   
 def scraper(infile='COVID19DistrictWisePositivityAnalysis20July.xlsx',year=2022,write_csv=False):
