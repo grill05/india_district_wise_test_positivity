@@ -1,2 +1,2 @@
-colorama
 bs4
+colorama
