@@ -12,7 +12,7 @@ def scrape_download_mohfw_website():
   date = datetime.datetime.now().strftime("%Y-%m-%d")
   if os.path.exists('index.html'): os.remove('index.html')
   
-  cmd='wget https://mohfw.gov.in/ -O index.html';
+  cmd='wget --no-check-certificate https://mohfw.gov.in/ -O index.html';
   print(cmd);os.system(cmd);
   
   soup=bs4.BeautifulSoup(open('index.html'),'html.parser')
